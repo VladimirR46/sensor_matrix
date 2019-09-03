@@ -27,10 +27,8 @@ SocketAddress sockAddr(_HOST_IP, _HOST_PORT);
 
 Serial usb(USBTX, USBRX, 115200);
 
-DigitalOut myled(PH_1);
-
 AnalogIn analog_pin[ANALOG_IN] = {PA_3, PC_0, PC_3, PF_3, PF_5, PF_10};
-DigitalOut digital_pin[DIGITAL_OUT] = {PF_2, PH_1, PH_0, PD_0, PD_1, PG_0, PD_7, PD_6, PD_5};
+DigitalOut digital_pin[DIGITAL_OUT] = {PF_2, PD_4, PD_3, PD_0, PD_1, PG_0, PD_7, PD_6, PD_5};
 
 unsigned short Matrix[DIGITAL_OUT][ANALOG_IN];
 
@@ -53,6 +51,7 @@ int main()
     digital_pin[i] = 0;
 
   send_timer.start();
+
   // main loop
   while (1)
   {
@@ -62,16 +61,18 @@ int main()
       wait_us(100);
 
       buff[0] = i;
+      uint8_t index = 1;
       for (int j = 0; j < ANALOG_IN; j++)
       {
         // Reads
         uint16_t data = analog_pin[j].read_u16();
 
         //Pack
-        buff[j + 1] = data & 0xFF00;
-        buff[j + 2] = data & 0x00FF;
+        buff[index] = (data & 0xFF00) >> 8;
+        buff[index + 1] = data & 0x00FF;
 
-        //Matrix[i][j] = buff[j];
+        //Matrix[i][j] = data;
+        index += 2;
       }
       digital_pin[i] = 0;
 
@@ -80,14 +81,14 @@ int main()
     }
 
     hz++;
-    int col = 7;
+    int col = 4;
     if (send_timer.read_ms() >= 1000)
     {
       send_timer.reset();
       usb.printf("hz: %d \n", hz);
       hz = 0;
       //udp_socket.send("y", 1);
-      //usb.printf("A0: %d  %d  %d  %d  %d  %d  \r\n", Matrix[col][0], Matrix[col][1], Matrix[col][2], Matrix[col][3], Matrix[col][4], Matrix[col][5]);
+      //usb.printf("A0: %d  %d  %d  %d  %d  %d  %d  %d  %d\r\n", Matrix[0][0], Matrix[1][0], Matrix[2][0], Matrix[3][0], Matrix[4][0], Matrix[5][0], Matrix[6][0], Matrix[7][0], Matrix[8][0]);
     }
     //wait(0.1);
   }
