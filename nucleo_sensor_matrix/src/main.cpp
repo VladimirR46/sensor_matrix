@@ -2,8 +2,8 @@
 #include <EthernetInterface.h> // Network interface API
 #include "UDPSocket.h"         // Network socket API
 
-#define DIGITAL_OUT 9
-#define ANALOG_IN 6
+#define DIGITAL_OUT 23
+#define ANALOG_IN 23
 
 #define _STATIC_IP // enable static IP (dhcp is used instead)
 #define _SERVER_PC
@@ -27,8 +27,8 @@ SocketAddress sockAddr(_HOST_IP, _HOST_PORT);
 
 Serial usb(USBTX, USBRX, 115200);
 
-AnalogIn analog_pin[ANALOG_IN] = {PA_3, PC_0, PC_3, PF_3, PF_5, PF_10};
-DigitalOut digital_pin[DIGITAL_OUT] = {PF_2, PD_4, PD_3, PD_0, PD_1, PG_0, PD_7, PD_6, PD_5};
+AnalogIn analog_pin[ANALOG_IN] = {PC_0, PF_8, PC_1, PF_9, PB_0, PC_3, PA_4, PC_2, PA_1, PF_7, PA_0, PF_6, PA_5, PC_5, PA_6, PB_1, PA_7, PC_4, PA_2, PF_5, PA_3, PF_4, PF_3}; //, PF_10};
+DigitalOut digital_pin[DIGITAL_OUT] = {PE_6, PG_0, PG_1, PD_0, PF_2, PD_1, PE_5, PE_3, PE_4, PD_7, PG_3, PD_6, PD_3, PD_5, PD_2, PD_4, PC_7, PF_14, PD_13, PE_9, PE_13, PE_11, PF_13}; //, PF_15};
 
 unsigned short Matrix[DIGITAL_OUT][ANALOG_IN];
 
@@ -58,7 +58,8 @@ int main()
     for (int i = 0; i < DIGITAL_OUT; i++)
     {
       digital_pin[i] = 1;
-      wait_us(100);
+      wait_us(50);
+      //wait_ms(100);
 
       buff[0] = i;
       uint8_t index = 1;
@@ -87,6 +88,9 @@ int main()
       send_timer.reset();
       usb.printf("hz: %d \n", hz);
       hz = 0;
+
+      //usb.printf("\r\n");
+
       //udp_socket.send("y", 1);
       //usb.printf("A0: %d  %d  %d  %d  %d  %d  %d  %d  %d\r\n", Matrix[0][0], Matrix[1][0], Matrix[2][0], Matrix[3][0], Matrix[4][0], Matrix[5][0], Matrix[6][0], Matrix[7][0], Matrix[8][0]);
     }
